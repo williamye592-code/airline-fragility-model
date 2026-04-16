@@ -59,7 +59,9 @@ def add_time_features(df: pd.DataFrame) -> pd.DataFrame:
     df["seq_dayofweek"] = df[DATE_COL].dt.dayofweek
     df["is_weekend"] = df["seq_dayofweek"].isin([5, 6]).astype(int)
 
-    if START_TIME_COL in df.columns:
+    if "SEQ_START_HRS" in df.columns:
+        df["seq_start_hour"] = pd.to_numeric(df["SEQ_START_HRS"], errors="coerce")
+    elif START_TIME_COL in df.columns:
         df["seq_start_hour"] = df[START_TIME_COL].apply(_extract_hour)
     else:
         df["seq_start_hour"] = np.nan
@@ -76,4 +78,7 @@ def build_modeling_table(df: pd.DataFrame) -> pd.DataFrame:
 def get_X_y(df: pd.DataFrame):
     X = df[FEATURE_COLS].copy()
     y = df[TARGET_COL].copy()
+
+    print("Final feature columns: ")
+    print(X.columns.tolist())
     return X, y
